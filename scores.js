@@ -9,15 +9,17 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
   }
   
   function main() {
-    let url_regex = /https:\/\/app\.edulastic\.com\/home\/class\/([a-f0-9]+)\/test\/([a-f0-9]+)\/testActivityReport\/([a-f0-9]+)/;
-    if (!url_regex.test(window.location)) {
-        alert("Error: Invalid URL.\n\nFor reference, the URL should look like this:\nhttps://app.edulastic.com/home/class/CLASS_ID/test/TEST_ID/testActivityReport/TEST_REPORT_ID");
+    let url_regex = /https:\/\/app\.edulastic\.com\/home\/class\/([a-f0-9]+)\/test\/([a-f0-9]+)\/testActivityReport\/([a-zA-Z0-9]+)/;
+    if (!url_regex.test(window.location.href)) {
+      alert("Error: Invalid URL.\n\nFor reference, the URL should look like this:\nhttps://app.edulastic.com/home/class/CLASS_ID/test/TEST_ID/testActivityReport/REPORT_ID");
       return;
     }
-    let matches = url_regex.exec(window.location);
+    let matches = url_regex.exec(window.location.href);
     let group_id = matches[1];
-    let test_id = matches[3];
-    let request_url = `https://app.edulastic.com/api/test-activity/${test_id}/report?groupId=${group_id}`;
+    let test_id = matches[2];
+    let report_id = matches[3];
+    let request_url = `https://app.edulastic.com/api/test-activity/${report_id}/report?groupId=${group_id}&testId=${test_id}`;
+    
     let token_list = JSON.parse(localStorage.getItem("tokens"));
     let token = localStorage.getItem(token_list[0]);
   
@@ -26,7 +28,7 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
     ];
     http_get(request_url, function(){
       if (this.status != 200) {
-        alert(`Error: Status code ${this.status} recieved while trying to fetch the API.`);
+        alert(`Error: Status code ${this.status} received while trying to fetch the API.`);
         return;
       }
       let report = JSON.parse(this.responseText);
@@ -38,3 +40,4 @@ function http_get(url, callback, headers=[], method="GET", content=null) {
   }
   
   main();
+  
